@@ -6,6 +6,9 @@
 #include "ToolBox.h"
 
 #define PWMPER 40.0
+
+#define Moteur_droit 0
+#define Moteur_gauche 1
 unsigned char acceleration = 20;
 
 void InitPWM(void)
@@ -29,11 +32,48 @@ FCLCON6 = 0x0003; //Désactive la gestion des faults
 PTCONbits.PTEN = 1;
 }
 
-void PWMSetSpeed(float vitesseEnPourcents)
+void PWMSetSpeed(float vitesseEnPourcents,int moteur)
 {
+
 robotState.vitesseGaucheCommandeCourante = vitesseEnPourcents;
+robotState.vitesseDroiteCommandeCourante = vitesseEnPourcents;
+
+if (vitesseEnPourcents>=0){
+   if (moteur==Moteur_droit)
+    {
+    MOTEUR_DROIT_L_PWM_ENABLE = 1; //Pilotage de la pin en mode IO
+    MOTEUR_DROIT_L_IO_OUTPUT = 1; //Mise à 1 de la pin
+    MOTEUR_DROIT_H_IO_OUTPUT = 0; //Mise à 0 de la pin
+    MOTEUR_DROIT_H_PWM_ENABLE = 0;//Pilotage de la pin en mode PWM
+    MOTEUR_DROIT_DUTY_CYCLE =Abs(robotState.vitesseGaucheCommandeCourante*PWMPER);
+   }
+   else if(moteur==Moteur_gauche)
+   {
 MOTEUR_GAUCHE_L_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
 MOTEUR_GAUCHE_L_IO_OUTPUT = 1; //Mise à 1 de la pin
+MOTEUR_GAUCHE_H_IO_OUTPUT = 0; //Mise à 0 de la pin
 MOTEUR_GAUCHE_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseDroiteCommandeCourante*PWMPER);
+   }
+
+}
+
+else if (vitesseEnPourcents<0)
+{if (moteur==Moteur_droit)
+    {
+    MOTEUR_DROIT_L_PWM_ENABLE = 1; //Pilotage de la pin en mode IO
+    MOTEUR_DROIT_L_IO_OUTPUT = 0; //Mise à 1 de la pin
+    MOTEUR_DROIT_H_IO_OUTPUT = 1; //Mise à 0 de la pin
+    MOTEUR_DROIT_H_PWM_ENABLE = 0; //Pilotage de la pin en mode PWM
+    MOTEUR_DROIT_DUTY_CYCLE =Abs(robotState.vitesseDroiteCommandeCourante*PWMPER);
+   }
+   else if(moteur==Moteur_gauche)
+   {
+MOTEUR_GAUCHE_L_PWM_ENABLE = 1; //Pilotage de la pin en mode IO
+MOTEUR_GAUCHE_L_IO_OUTPUT = 1; //Mise à 1 de la pin
+MOTEUR_GAUCHE_H_IO_OUTPUT = 0; //Mise à 0 de la pin
+MOTEUR_GAUCHE_H_PWM_ENABLE = 0; //Pilotage de la pin en mode PWM
 MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseGaucheCommandeCourante*PWMPER);
+   }
+}
 }

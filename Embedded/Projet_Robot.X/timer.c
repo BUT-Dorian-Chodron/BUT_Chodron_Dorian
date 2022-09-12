@@ -1,10 +1,15 @@
 #include <xc.h>
 #include "timer.h"
 #include "IO.h"
+#include "PWM.h"
 
+#define Moteur_droit 0
+#define Moteur_gauche 1
 //Initialisation d?un timer 32 bits
+uint16_t sens=0;
 
 void InitTimer23(void) {
+    
     T3CONbits.TON = 0; // Stop any 16-bit Timer3 operation
     T2CONbits.TON = 0; // Stop any 16/32-bit Timer3 operation
     T2CONbits.T32 = 1; // Enable 32-bit Timer mode
@@ -25,7 +30,17 @@ void InitTimer23(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
-    LED_ORANGE = !LED_ORANGE;
+    LED_ORANGE = !LED_ORANGE; 
+   /* if (sens==0){
+        PWMSetSpeed(30,Moteur_droit);
+        PWMSetSpeed(30,Moteur_gauche);
+        sens=1;
+    } else {
+        PWMSetSpeed(-30,Moteur_droit);
+        PWMSetSpeed(-30,Moteur_gauche);
+        sens=0;
+    }*/
+   
 }
 
 //Initialisation d?un timer 16 bits
@@ -50,9 +65,6 @@ void InitTimer1(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0;
-    LED_BLANCHE = !LED_BLANCHE;
- 
-   
-    
+    LED_BLANCHE = !LED_BLANCHE;  
 }
 

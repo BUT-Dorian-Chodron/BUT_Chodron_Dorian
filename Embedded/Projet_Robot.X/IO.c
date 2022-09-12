@@ -47,6 +47,10 @@ void InitIO()
     _TRISB14 = 0; //JSP
             
     _TRISB15 = 0; //JSP2
+    
+    _TRISC7 = 0;
+    
+    _TRISC6 = 0;
 
     // Moteurs 
 

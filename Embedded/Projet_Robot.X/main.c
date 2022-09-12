@@ -6,6 +6,9 @@
 #include <xc.h>
 #include "PWM.h"
 
+#define Moteur_droit 0
+#define Moteur_gauche 1
+
 int main(void) {
 
     InitOscillator();
@@ -13,7 +16,11 @@ int main(void) {
     InitTimer1();
     InitIO();
     InitPWM();
-    PWMSetSpeed(30);
+ 
+
+  PWMSetSpeed(30,Moteur_gauche);
+  PWMSetSpeed(50,Moteur_droit);
+    
     
     
     

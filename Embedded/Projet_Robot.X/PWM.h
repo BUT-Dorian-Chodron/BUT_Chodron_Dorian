@@ -9,6 +9,6 @@
 #define	PWM_H
 
 void InitPWM(void);
-void PWMSetSpeed(float vitesseEnPourcents);
+void PWMSetSpeed(float vitesseEnPourcents,int moteur);
 
 #endif
