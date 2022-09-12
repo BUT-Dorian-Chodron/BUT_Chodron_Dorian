@@ -44,7 +44,9 @@ void InitIO()
 
     _TRISG7 = 0; // LED Bleue
 
-    
+    _TRISB14 = 0; //JSP
+            
+    _TRISB15 = 0; //JSP2
 
     // Moteurs 
 

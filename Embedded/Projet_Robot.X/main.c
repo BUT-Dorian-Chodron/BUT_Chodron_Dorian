@@ -4,6 +4,7 @@
 #include "ChipConfig.h"
 #include "IO.h"
 #include <xc.h>
+#include "PWM.h"
 
 int main(void) {
 
@@ -11,6 +12,9 @@ int main(void) {
     InitTimer23();
     InitTimer1();
     InitIO();
+    InitPWM();
+    PWMSetSpeed(30);
+    
     
     
     LED_BLANCHE = 1;
