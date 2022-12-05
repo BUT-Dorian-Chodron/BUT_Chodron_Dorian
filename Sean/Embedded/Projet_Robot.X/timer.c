@@ -33,6 +33,7 @@ void InitTimer23(void) {
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
     LED_ORANGE = !LED_ORANGE; 
+    PWMUpdateSpeed();
 //    if (sens==0){
 //      PWMSetSpeedConsigne(20.0,MoteurGauche);
 //      PWMSetSpeedConsigne(20.0,MoteurDroit);
@@ -68,7 +69,7 @@ void InitTimer1(void) {
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0;
     LED_BLANCHE = !LED_BLANCHE; 
-    PWMUpdateSpeed();
+   // PWMUpdateSpeed();
     ADC1StartConversionSequence();
     
 }
