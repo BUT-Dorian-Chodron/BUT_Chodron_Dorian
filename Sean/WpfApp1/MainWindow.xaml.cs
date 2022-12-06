@@ -88,6 +88,7 @@ namespace WpfApp1
            serialPort1.WriteLine(textBoxEmission.Text);
             textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
             textBoxEmission.Text = "";
+
         }
 
         private void textBoxEmission_KeyUp(object sender, KeyEventArgs e)
