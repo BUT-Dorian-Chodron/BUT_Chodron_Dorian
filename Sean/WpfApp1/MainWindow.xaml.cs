@@ -203,6 +203,7 @@ namespace WpfApp1
                     break;
 
                 case StateReception.Payload:
+
                     msgDecodedPayload[msgDecodedPayloadIndex] = c;
                     msgDecodedPayloadIndex++;
 
@@ -230,5 +231,6 @@ namespace WpfApp1
                     break;
             }
         }
+
     }
 }
