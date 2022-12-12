@@ -17,7 +17,7 @@ using System.Windows.Threading;
 
 namespace WpfApp1
 {
-    
+
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
@@ -37,7 +37,7 @@ namespace WpfApp1
             timerAffichage.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timerAffichage.Tick += TimerAffichage_Tick;
             timerAffichage.Start();
-           
+
 
 
 
@@ -50,15 +50,15 @@ namespace WpfApp1
             //   textBoxReception.Text += "Utilisation Serial port : "+robot.receivedText + "\n";
             //   robot.receivedText = "";
             // }
-            
-                while(robot.byteListReceived.Count()>0)
-                {
-                    var c=robot.byteListReceived.Dequeue();
-                   textBoxReception.Text += "0x"+c.ToString("X2")+" ";
-                    
-                }
-               
-            
+
+            while (robot.byteListReceived.Count() > 0)
+            {
+                var c = robot.byteListReceived.Dequeue();
+                //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
+                DecodeMessage(c);
+            }
+
+
         }
 
         private void SerialPort1_DataReceived(object sender, DataReceivedArgs e)
@@ -66,8 +66,9 @@ namespace WpfApp1
             //textBoxReception.Text += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
             robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
             foreach (var c in e.Data)
-           {
+            {
                 robot.byteListReceived.Enqueue(c);
+                
             }
         }
 
@@ -82,13 +83,13 @@ namespace WpfApp1
 
             sendMessage();
 
-            
+
 
         }
         void sendMessage()
         {
-           serialPort1.WriteLine(textBoxEmission.Text);
-            textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
+            serialPort1.WriteLine(textBoxEmission.Text);
+            //textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
             textBoxEmission.Text = "";
 
         }
@@ -147,6 +148,87 @@ namespace WpfApp1
             string s = "Bonjour";
             byte[] array = Encoding.ASCII.GetBytes(s);
             UartEncodeAndSendMessage(0x0080, array.Length, array);
+        }
+        public enum StateReception
+        {
+            Waiting,
+            FunctionMSB,
+            FunctionLSB,
+            PayloadLengthMSB,
+            PayloadLengthLSB,
+            Payload,
+            CheckSum
+        }
+
+        StateReception rcvState = StateReception.Waiting;
+        int msgDecodedFunction = 0;
+        int msgDecodedPayloadLength = 0;
+        byte[] msgDecodedPayload;
+        int msgDecodedPayloadIndex = 0;
+
+        private void DecodeMessage(byte c)
+        {
+            switch (rcvState)
+            {
+                case StateReception.Waiting:
+
+                    if (c == 0xFE) rcvState = StateReception.FunctionMSB;
+                    else rcvState = StateReception.Waiting;  
+                    break;
+
+                case StateReception.FunctionMSB:
+
+                    msgDecodedFunction = (int)(c << 8);
+                    rcvState = StateReception.FunctionLSB;
+                    break;
+
+                case StateReception.FunctionLSB:
+
+                    msgDecodedFunction += (int)(c << 0);
+                    rcvState = StateReception.PayloadLengthMSB;
+                    break;
+
+                case StateReception.PayloadLengthMSB:
+
+                    msgDecodedPayloadLength = (int)(c << 8);
+                    rcvState = StateReception.PayloadLengthLSB;
+                    break;
+
+                case StateReception.PayloadLengthLSB:
+
+                    msgDecodedPayloadLength += (int)(c << 0);
+                    rcvState = StateReception.Payload;
+                    msgDecodedPayload = new byte[msgDecodedPayloadLength];
+                    msgDecodedPayloadIndex = 0;
+                    break;
+
+                case StateReception.Payload:
+                    msgDecodedPayload[msgDecodedPayloadIndex] = c;
+                    msgDecodedPayloadIndex++;
+
+                    if (msgDecodedPayloadIndex >= msgDecodedPayloadLength)
+                        rcvState = StateReception.CheckSum;
+                    break;
+
+                case StateReception.CheckSum:
+
+                    byte checksum = CalculateChecksum(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);                  
+
+                    if (checksum == c)
+                    {
+                        textBoxReception.Text = "OK \n";
+                    }
+                    else
+                    {
+                        textBoxReception.Text = "NON OK \n";
+                    }
+                    rcvState = StateReception.Waiting;
+
+                    break;
+                default:
+                    rcvState = StateReception.Waiting;
+                    break;
+            }
         }
     }
 }
