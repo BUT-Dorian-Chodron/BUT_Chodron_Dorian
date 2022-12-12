@@ -37,8 +37,10 @@ namespace WpfApp1
             timerAffichage.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timerAffichage.Tick += TimerAffichage_Tick;
             timerAffichage.Start();
-            
-            
+           
+
+
+
         }
 
         private void TimerAffichage_Tick(object sender, EventArgs e)
@@ -102,6 +104,49 @@ namespace WpfApp1
             textBoxEmission.Text = "";
             textBoxReception.Text = "";
 
+        }
+        byte CalculateChecksum(int msgFunction, int msgPayloadLength, byte[] msgPayload)
+        {
+            byte c = 0x00;
+            c ^= 0xFE;
+            c ^= (byte)(msgFunction >> 8);
+            c ^= (byte)(msgFunction >> 0);
+            c ^= (byte)(msgPayloadLength >> 8);
+            c ^= (byte)(msgPayloadLength >> 0);
+            for (int i = 0; i < msgPayloadLength; i++)
+            {
+                c ^= (byte)(msgPayload[i]);
+            }
+            return c;
+        }
+        void UartEncodeAndSendMessage(int msgFunction, int msgPayloadLength, byte[] msgPayload)
+        {
+            //Encode
+            byte[] message = new byte[msgPayloadLength + 6];
+            int pos = 0;
+
+            message[pos++] = 0xFE;
+            message[pos++] = (byte)(msgFunction >> 8);
+            message[pos++] = (byte)(msgFunction);
+            message[pos++] = (byte)(msgPayloadLength >> 8);
+            message[pos++] = (byte)(msgPayloadLength);
+            for (int i = 0; i < msgPayloadLength; i++)
+            {
+                message[pos++] = msgPayload[i];
+            }
+            message[pos++] = CalculateChecksum(msgFunction, msgPayloadLength, msgPayload);
+
+            //Send message
+            serialPort1.Write(message, 0, pos);
+
+
+        }
+
+        private void Test_Click(object sender, RoutedEventArgs e)
+        {
+            string s = "Bonjour";
+            byte[] array = Encoding.ASCII.GetBytes(s);
+            UartEncodeAndSendMessage(0x0080, array.Length, array);
         }
     }
 }
