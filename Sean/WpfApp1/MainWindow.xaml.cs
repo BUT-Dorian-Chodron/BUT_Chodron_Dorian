@@ -145,9 +145,26 @@ namespace WpfApp1
 
         private void Test_Click(object sender, RoutedEventArgs e)
         {
-            string s = "Bonjour";
-            byte[] array = Encoding.ASCII.GetBytes(s);
-            UartEncodeAndSendMessage(0x0080, array.Length, array);
+            //string s = "Bonjour";
+            //byte[] array = Encoding.ASCII.GetBytes(s);
+            //UartEncodeAndSendMessage(0x0080, array.Length, array);
+
+            byte[] led = { 0x11, 0x01 };
+            UartEncodeAndSendMessage(0x0020, 2, led);
+
+            byte[] Telemetre = { 0x0E, 0xA1, 0x00 };
+            UartEncodeAndSendMessage(0x0030, 3, Telemetre);
+
+            byte[] vitesse = { 0xAA, 0x00 };
+            UartEncodeAndSendMessage(0x0040, 2, vitesse);
+
+            ProcessDecodedMessage(0x0040, 2, vitesse);
+            ProcessDecodedMessage(0x0020, 2, led);
+            ProcessDecodedMessage(0x0030, 2, Telemetre);
+
+
+
+
         }
         public enum StateReception
         {
@@ -231,6 +248,40 @@ namespace WpfApp1
                     break;
             }
         }
+        void ProcessDecodedMessage(int msgFunction, int msgPayloadLength,byte[]msgPayLoad)
+        {
+            if (msgFunction==0x0030)
+            {
+                IRgauche.Text = "IR gauche : " + msgPayLoad[0]+"cm";
+                IRcentre.Text = "IR centre : " + msgPayLoad[1] + "cm";
+                IRdroite.Text = "IR droite : " + msgPayLoad[2] + "cm";
+            }
+            if (msgFunction == 0x0040)
+            {
+                moteur_gauche.Text = "Moteur gauche : " + msgPayLoad[0] + "%";
+                moteur_droit.Text = "Moteur droit : " + msgPayLoad[1] + "%";
+                
+            }
+            if (msgFunction ==0x0020)
+            {
+                switch(msgPayLoad[0])
+                {
+                    case (1): 
+                        if (msgPayLoad[1]==0)Led1.IsChecked = false;
+                        if (msgPayLoad[1] == 1)Led1.IsChecked = true;
+                        break;
+                    case (2):
+                        if (msgPayLoad[1] == 0) Led2.IsChecked = false;
+                        if (msgPayLoad[1] == 1) Led2.IsChecked = true;
+                        break;
+                    case (3):
+                        if (msgPayLoad[1] == 0) Led3.IsChecked = false;
+                        if (msgPayLoad[1] == 1) Led3.IsChecked = true;
+                        break;
 
+                }
+            }
+
+        }
     }
 }
