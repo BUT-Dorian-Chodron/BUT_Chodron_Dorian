@@ -12,9 +12,9 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="247*"/>
-            <RowDefinition Height="41*"/>
-            <RowDefinition Height="131*"/>
+            <RowDefinition Height="236*"/>
+            <RowDefinition Height="29*"/>
+            <RowDefinition Height="154*"/>
 
 
         </Grid.RowDefinitions>
@@ -24,10 +24,10 @@
         <GroupBox Grid.Column="1" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto">
             <TextBox x:Name="textBoxReception"  AcceptsReturn="True" Text="" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
         </GroupBox>
-        <Button x:Name="buttonEnvoyer" Content="envoyer" Grid.Column="1"  HorizontalAlignment="Center"  VerticalAlignment="Top" Width="150" Grid.Row="1" Click="buttonEnvoyer_Click" Height="20" Margin="123,0" />
-        <Button x:Name="Clear" Content="Clear" Grid.Column="0"  HorizontalAlignment="Center"  VerticalAlignment="Top" Width="100" Grid.ColumnSpan="1" Grid.Row="1" Click="Clear_Click" Height="20" Margin="148,0" />
-        <Button x:Name="Test"  Content="Test" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Top" Width="90" Click="Test_Click" Grid.ColumnSpan="2" Height="20" Margin="351,0" />
-        <GroupBox x:Name="Led" Header="Leds " HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Stretch" Width="100" Margin="0,12,0,-1">
+        <Button x:Name="buttonEnvoyer" Content="envoyer" Grid.Column="1"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="110" Grid.Row="1" Click="buttonEnvoyer_Click" Height="20"  />
+        <Button x:Name="Clear" Content="Clear" Grid.Column="0"  HorizontalAlignment="Center"  VerticalAlignment="Stretch" Width="110" Grid.ColumnSpan="1" Grid.Row="1" Click="Clear_Click" Height="20"  />
+        <Button x:Name="Test"  Content="Test" HorizontalAlignment="Center"  Grid.Row="1" VerticalAlignment="Stretch" Width="110" Click="Test_Click" Grid.ColumnSpan="2" Height="20"  />
+        <GroupBox x:Name="Led" Header="Leds " HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Stretch" Width="100">
             <StackPanel>
                 <CheckBox x:Name="Led1" Content="Led1" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                 <CheckBox x:Name="Led2" Content="Led2"  HorizontalAlignment="Left" VerticalAlignment="Stretch" />
@@ -35,14 +35,14 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox x:Name="Telemetre_IR" Header="Télémetres IR " HorizontalAlignment="Center"  Grid.Row="2" VerticalAlignment="Stretch" Width="100" Margin="148,12,148,-1">
+        <GroupBox x:Name="Telemetre_IR" Header="Télémetres IR " HorizontalAlignment="Center"  Grid.Row="2" VerticalAlignment="Stretch" Width="100" >
             <StackPanel>
                 <TextBox x:Name="IRgauche" TextWrapping="Wrap" Text="IR Gauche : " HorizontalAlignment="Stretch"/>
                 <TextBox x:Name="IRcentre" TextWrapping="Wrap" Text="IR Centre : " HorizontalAlignment="Stretch"/>
                 <TextBox x:Name="IRdroite" TextWrapping="Wrap" Text="IR Droite : " HorizontalAlignment="Stretch"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="Moteurs" Header="Moteur" HorizontalAlignment="Right"  Grid.Row="2" VerticalAlignment="Stretch" Width="100" Margin="0,12,0,-1">
+        <GroupBox x:Name="Moteurs" Header="Moteur" HorizontalAlignment="Right"  Grid.Row="2" VerticalAlignment="Stretch" Width="100" >
             <StackPanel>
                 <TextBox x:Name="moteur_gauche" TextWrapping="Wrap" Text="Moteur Gauche : " HorizontalAlignment="Stretch"/>
                 <TextBox x:Name="moteur_droit" TextWrapping="Wrap" Text="Moteur      Droit : " HorizontalAlignment="Stretch"/>

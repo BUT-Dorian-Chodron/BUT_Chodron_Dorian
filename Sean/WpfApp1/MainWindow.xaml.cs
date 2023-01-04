@@ -149,13 +149,13 @@ namespace WpfApp1
             //byte[] array = Encoding.ASCII.GetBytes(s);
             //UartEncodeAndSendMessage(0x0080, array.Length, array);
 
-            byte[] led = { 0x11, 0x01 };
+            byte[] led = { 0x10, 0x01 };
             UartEncodeAndSendMessage(0x0020, 2, led);
 
-            byte[] Telemetre = { 0x0E, 0xA1, 0x00 };
+            byte[] Telemetre = { 0x0E, 0xA1, 0x10 };
             UartEncodeAndSendMessage(0x0030, 3, Telemetre);
 
-            byte[] vitesse = { 0xAA, 0x00 };
+            byte[] vitesse = { 0xA0, 0x85 };
             UartEncodeAndSendMessage(0x0040, 2, vitesse);
 
             ProcessDecodedMessage(0x0040, 2, vitesse);
@@ -261,20 +261,23 @@ namespace WpfApp1
                 moteur_gauche.Text = "Moteur gauche : " + msgPayLoad[0] + "%";
                 moteur_droit.Text = "Moteur droit : " + msgPayLoad[1] + "%";
                 
+
             }
             if (msgFunction ==0x0020)
             {
                 switch(msgPayLoad[0])
                 {
-                    case (1): 
+                    case (0x01):
+                        
                         if (msgPayLoad[1]==0)Led1.IsChecked = false;
                         if (msgPayLoad[1] == 1)Led1.IsChecked = true;
                         break;
-                    case (2):
+                    case (0x10):
                         if (msgPayLoad[1] == 0) Led2.IsChecked = false;
                         if (msgPayLoad[1] == 1) Led2.IsChecked = true;
                         break;
-                    case (3):
+                    case (0x11):
+                        
                         if (msgPayLoad[1] == 0) Led3.IsChecked = false;
                         if (msgPayLoad[1] == 1) Led3.IsChecked = true;
                         break;
