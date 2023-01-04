@@ -1,6 +1,7 @@
 
 #ifndef UART_PROTOCOL_H
 #define	UART_PROTOCOL_H
+
 #define Waiting 0
 #define FunctionLSB 1
 #define FunctionMSB 2

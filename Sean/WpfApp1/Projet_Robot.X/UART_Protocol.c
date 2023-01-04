@@ -1,8 +1,10 @@
 #include <xc.h>
-#include "UART_Protocol.h"
+#include "Uart_Protocol.h"
 #include "CB_TX1.h"
 #include "IO.h"
 #include "PWM.h"
+
+
 int msgDecodedFunction = 0;
 int msgDecodedPayloadLength = 0;
 unsigned char msgDecodedPayload[128];
@@ -34,113 +36,114 @@ void UartEncodeAndSendMessage(int msgFunction,int msgPayloadLength, unsigned cha
         message[pos++] = 0xFE;
         message[pos++] = (msgFunction >> 8);
         message[pos++] = (msgFunction);
-            message[pos++] = (msgPayloadLength >> 8);
-            message[pos++] = (msgPayloadLength);
+        message[pos++] = (msgPayloadLength >> 8);
+        message[pos++] = (msgPayloadLength);
             for (int i = 0; i < msgPayloadLength; i++)
             {
                 message[pos++] = msgPayload[i];
             }
             message[pos++] = UartCalculateChecksum(msgFunction, msgPayloadLength, msgPayload);
 
-            SendMessage(message,msgPayloadLength);
+            SendMessage(message,pos);
           
 }
 
-void UartDecodeMessage(unsigned char c)
-{
-switch (rcvState)
-            {
-                case Waiting:
+//void UartDecodeMessage(unsigned char c)
+//{
+//switch (rcvState)
+//            {
+//                case Waiting:
+//
+//                    if (c == 0xFE) rcvState = FunctionMSB;
+//                    else rcvState = Waiting;  
+//                    break;
+//
+//                case FunctionMSB:
+//
+//                    msgDecodedFunction = (int)(c << 8);
+//                    rcvState = FunctionLSB;
+//                    break;
+//
+//                case FunctionLSB:
+//
+//                    msgDecodedFunction += (int)(c << 0);
+//                    rcvState = PayloadLengthMSB;
+//                    break;
+//
+//                case PayloadLengthMSB:
+//
+//                    msgDecodedPayloadLength = (int)(c << 8);
+//                    rcvState = PayloadLengthLSB;
+//                    break;
+//
+//                case PayloadLengthLSB:
+//
+//                    msgDecodedPayloadLength += (int)(c << 0);
+//                    rcvState = Payload;
+//                    
+//                    msgDecodedPayloadIndex = 0;
+//                    break;
+//
+//                case Payload:
+//
+//                    msgDecodedPayload[msgDecodedPayloadIndex] = c;
+//                    msgDecodedPayloadIndex++;
+//
+//                    if (msgDecodedPayloadIndex >= msgDecodedPayloadLength)
+//                        rcvState = CheckSum;
+//                    break;
+//
+//                case CheckSum:
+//
+//                                      
+//
+//                    if (UartCalculateChecksum(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload) == c)
+//                   {
+//                        UartProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
+//                   }
+//                    else
+//                    {
+//                       
+//                    }
+//                    rcvState = Waiting;
+//
+//                    break;
+//                default:
+//                    rcvState =Waiting;
+//                    break;
+//            }
+//
+//
+//}
 
-                    if (c == 0xFE) rcvState = FunctionMSB;
-                    else rcvState = Waiting;  
-                    break;
+//void UartProcessDecodedMessage(unsigned char function,unsigned char payloadLength, unsigned char* payload)
+//{
+//    if (function==0x0030)//telemetre
+//        {
+//        SendMessage(payload,payloadLength); 
+//        }
+//    if (function == 0x0040)
+//        {
+//        //PWMSetSpeedConsigne((float)playload[0],MoteurGauche);
+//        //PWMSetSpeedConsigne((float)playload[1],MoteurDroit);
+//        }
+//    if (function ==0x0020)
+//        {
+//        switch(payload[0])
+//            {
+//            case (0x01):
+//                LED_BLANCHE=(int)payload[1];
+//                break;
+//            
+//            case (0x10):
+//                LED_ORANGE=(int)payload[1];
+//                break;
+//                
+//            case (0x11):
+//                LED_BLEUE=(int)payload[1];
+//                break;
+//
+//                }
+//            }
+//}
 
-                case FunctionMSB:
-
-                    msgDecodedFunction = (int)(c << 8);
-                    rcvState = FunctionLSB;
-                    break;
-
-                case FunctionLSB:
-
-                    msgDecodedFunction += (int)(c << 0);
-                    rcvState = PayloadLengthMSB;
-                    break;
-
-                case PayloadLengthMSB:
-
-                    msgDecodedPayloadLength = (int)(c << 8);
-                    rcvState = PayloadLengthLSB;
-                    break;
-
-                case PayloadLengthLSB:
-
-                    msgDecodedPayloadLength += (int)(c << 0);
-                    rcvState = Payload;
-                    
-                    msgDecodedPayloadIndex = 0;
-                    break;
-
-                case Payload:
-
-                    msgDecodedPayload[msgDecodedPayloadIndex] = c;
-                    msgDecodedPayloadIndex++;
-
-                    if (msgDecodedPayloadIndex >= msgDecodedPayloadLength)
-                        rcvState = CheckSum;
-                    break;
-
-                case CheckSum:
-
-                                      
-
-                    if (UartCalculateChecksum(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload) == c)
-                   {
-                        UartProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
-                   }
-                    else
-                    {
-                       
-                    }
-                    rcvState = Waiting;
-
-                    break;
-                default:
-                    rcvState =Waiting;
-                    break;
-            }
-
-
-}
-
-void UartProcessDecodedMessage(unsigned char function,unsigned char payloadLength, unsigned char* payload)
-{
-    if (function==0x0030)//telemetre
-        {
-        SendMessage(payload,payloadLength); 
-        }
-    if (function == 0x0040)
-        {
-        PWMSetSpeedConsigne( (float)playload[0],MoteurGauche);
-        PWMSetSpeedConsigne(float playload[1],MoteurDroit);
-        }
-    if (function ==0x0020)
-        {
-        switch(payload[0])
-            {
-            case (0x01):
-                LED_BLANCHE=(int)payload[1];
-                break;
-            
-            case (0x10):
-                LED_ORANGE=(int)payload[1];
-                break;
-                
-            case (0x11):
-                LED_BLEUE=(int)payload[1];
-                break;
-
-                }
-            }
-}

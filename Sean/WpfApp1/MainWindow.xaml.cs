@@ -88,7 +88,7 @@ namespace WpfApp1
         }
         void sendMessage()
         {
-            //UartEncodeAndSendMessage(0x0080,textBoxEmission.Text.Length,);
+           
             serialPort1.WriteLine(textBoxEmission.Text);
             //textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
             textBoxEmission.Text = "";
@@ -226,16 +226,17 @@ namespace WpfApp1
 
                 case StateReception.CheckSum:
 
-                    byte checksum = CalculateChecksum(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);                  
+                    byte checksum = CalculateChecksum(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
 
                     if (checksum == c)
                     {
                         textBoxReception.Text = "OK \n";
+                        ProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
                     }
                     else
                     {
                         textBoxReception.Text = "NON OK \n";
-                    }
+                    }   
                     rcvState = StateReception.Waiting;
 
                     break;
@@ -259,27 +260,37 @@ namespace WpfApp1
                 
 
             }
-            if (msgFunction ==0x0020)
+            if (msgFunction == 0x0020)
             {
-                switch(msgPayLoad[0])
+                switch (msgPayLoad[0])
                 {
                     case (0x01):
-                        
-                        if (msgPayLoad[1]==0)Led1.IsChecked = false;
-                        if (msgPayLoad[1] == 1)Led1.IsChecked = true;
+
+                        if (msgPayLoad[1] == 0) Led1.IsChecked = false;
+                        if (msgPayLoad[1] == 1) Led1.IsChecked = true;
                         break;
                     case (0x10):
                         if (msgPayLoad[1] == 0) Led2.IsChecked = false;
                         if (msgPayLoad[1] == 1) Led2.IsChecked = true;
                         break;
                     case (0x11):
-                        
+
                         if (msgPayLoad[1] == 0) Led3.IsChecked = false;
                         if (msgPayLoad[1] == 1) Led3.IsChecked = true;
                         break;
 
                 }
             }
+            if (msgFunction == 0x0080)
+            {
+                for(int i  = 0; i< msgPayloadLength; i++)
+                    {
+                    textBoxReception.Text += "0x" + msgPayLoad[i].ToString("X2") + " ";
+                }
+            }
+
+
+
 
         }
 
