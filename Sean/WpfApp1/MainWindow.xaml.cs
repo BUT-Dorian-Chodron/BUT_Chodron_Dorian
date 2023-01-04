@@ -88,18 +88,14 @@ namespace WpfApp1
         }
         void sendMessage()
         {
+            //UartEncodeAndSendMessage(0x0080,textBoxEmission.Text.Length,);
             serialPort1.WriteLine(textBoxEmission.Text);
             //textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
             textBoxEmission.Text = "";
 
         }
 
-        private void textBoxEmission_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-                sendMessage();
-        }
-
+       
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             textBoxEmission.Text = "";
@@ -149,7 +145,7 @@ namespace WpfApp1
             //byte[] array = Encoding.ASCII.GetBytes(s);
             //UartEncodeAndSendMessage(0x0080, array.Length, array);
 
-            byte[] led = { 0x10, 0x01 };
+            byte[] led = { 0x11, 0x01 };
             UartEncodeAndSendMessage(0x0020, 2, led);
 
             byte[] Telemetre = { 0x0E, 0xA1, 0x10 };
@@ -285,6 +281,12 @@ namespace WpfApp1
                 }
             }
 
+        }
+
+        private void textBoxEmission_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                sendMessage();
         }
     }
 }

@@ -19,7 +19,7 @@
 
         </Grid.RowDefinitions>
         <GroupBox Grid.Column="0" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto">
-            <TextBox x:Name="textBoxEmission" AcceptsReturn="True" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            <TextBox x:Name="textBoxEmission" AcceptsReturn="True" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" KeyUp="textBoxEmission_KeyUp_1"/>
         </GroupBox>
         <GroupBox Grid.Column="1" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto">
             <TextBox x:Name="textBoxReception"  AcceptsReturn="True" Text="" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
