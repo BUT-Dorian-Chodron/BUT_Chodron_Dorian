@@ -1,10 +1,3 @@
-/*
-
- * File:   IO.c
-
- */
-
-
 
 #include <xc.h>
 
@@ -43,14 +36,15 @@ void InitIO()
     _TRISG6 = 0; //LED Blanche
 
     _TRISG7 = 0; // LED Bleue
+    
+    _TRISB14 = 0; //MOTEUR1 IN1
+    _TRISB15 = 0; //MOTEUR1 IN2
+    _TRISC6 = 0; //MOTEUR6 IN1
+    _TRISC7 = 0; //MOTEUR6 IN2
+    _U1RXR = 24; //remappe la RP24 sur l'entrée RX1
+    _RP36R=0b00001; //Remappe la sortie Tx1 vers RP36
 
-    _TRISB14 = 0; //JSP
-            
-    _TRISB15 = 0; //JSP2
     
-    _TRISC7 = 0;
-    
-    _TRISC6 = 0;
 
     // Moteurs 
 

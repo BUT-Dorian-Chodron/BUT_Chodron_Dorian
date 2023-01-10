@@ -1,3 +1,10 @@
-build/default/production/UART_Protocol.o: UART_Protocol.c UART_Protocol.h
+build/default/production/UART_Protocol.o: UART_Protocol.c Uart_Protocol.h \
+ CB_TX1.h IO.h PWM.h
 
-UART_Protocol.h:
+Uart_Protocol.h:
+
+CB_TX1.h:
+
+IO.h:
+
+PWM.h:

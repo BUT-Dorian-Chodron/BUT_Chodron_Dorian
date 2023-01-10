@@ -15,6 +15,10 @@ using System.Windows.Shapes;
 using ExtendedSerialPort;
 using System.Windows.Threading;
 
+using MouseKeyboardActivityMonitor.WinApi;
+using MouseKeyboardActivityMonitor;
+using System.Windows.Forms;
+
 namespace WpfApp1
 {
 
@@ -26,6 +30,7 @@ namespace WpfApp1
         ReliableSerialPort serialPort1;
         DispatcherTimer timerAffichage;
         Robot robot = new Robot();
+        private readonly KeyboardHookListener m_KeyboardHookManager;
 
         public MainWindow()
         {
@@ -38,10 +43,13 @@ namespace WpfApp1
             timerAffichage.Tick += TimerAffichage_Tick;
             timerAffichage.Start();
 
-
-
+            m_KeyboardHookManager = new KeyboardHookListener(new GlobalHooker());
+            m_KeyboardHookManager.Enabled = true;
+            m_KeyboardHookManager.KeyDown += HookManager_KeyDown;
 
         }
+
+        
 
         private void TimerAffichage_Tick(object sender, EventArgs e)
         {
@@ -148,15 +156,15 @@ namespace WpfApp1
             byte[] led = { 0x11, 0x01 };
             UartEncodeAndSendMessage(0x0020, 2, led);
 
-            byte[] Telemetre = { 0x0E, 0xA1, 0x10 };
-            UartEncodeAndSendMessage(0x0030, 3, Telemetre);
+            //byte[] Telemetre = { 0x0E, 0xA1, 0x10 };
+           // UartEncodeAndSendMessage(0x0030, 3, Telemetre);
 
-            byte[] vitesse = { 0xA0, 0x85 };
-            UartEncodeAndSendMessage(0x0040, 2, vitesse);
+            // byte[] vitesse = { 0xA0, 0x85 };
+            // UartEncodeAndSendMessage(0x0040, 2, vitesse);
 
-            ProcessDecodedMessage(0x0040, 2, vitesse);
+            //ProcessDecodedMessage(0x0040, 2, vitesse);
             ProcessDecodedMessage(0x0020, 2, led);
-            ProcessDecodedMessage(0x0030, 2, Telemetre);
+            //ProcessDecodedMessage(0x0030, 2, Telemetre);
 
 
 
@@ -171,6 +179,25 @@ namespace WpfApp1
             PayloadLengthLSB,
             Payload,
             CheckSum
+        }
+        public enum StateRobot
+        {
+            STATE_ATTENTE = 0,
+            STATE_ATTENTE_EN_COURS = 1,
+            STATE_AVANCE = 2,
+            STATE_AVANCE_EN_COURS = 3,
+            STATE_TOURNE_GAUCHE = 4,
+            STATE_TOURNE_GAUCHE_EN_COURS = 5,
+            STATE_TOURNE_DROITE = 6,
+            STATE_TOURNE_DROITE_EN_COURS = 7,
+            STATE_TOURNE_SUR_PLACE_GAUCHE = 8,
+            STATE_TOURNE_SUR_PLACE_GAUCHE_EN_COURS = 9,
+            STATE_TOURNE_SUR_PLACE_DROITE = 10,
+            STATE_TOURNE_SUR_PLACE_DROITE_EN_COURS = 11,
+            STATE_ARRET = 12,
+            STATE_ARRET_EN_COURS = 13,
+            STATE_RECULE = 14,
+            STATE_RECULE_EN_COURS = 15
         }
 
         StateReception rcvState = StateReception.Waiting;
@@ -281,23 +308,63 @@ namespace WpfApp1
 
                 }
             }
-            if (msgFunction == 0x0080)
+            if (msgFunction == 0x0080 || msgFunction ==0x051)
             {
                 for(int i  = 0; i< msgPayloadLength; i++)
                     {
                     textBoxReception.Text += "0x" + msgPayLoad[i].ToString("X2") + " ";
                 }
             }
+            if (msgFunction == 0x0050)
+            {
+                
+                int instant = (((int)msgPayLoad[1]) << 24) + (((int)msgPayLoad[2]) << 16)+ (((int)msgPayLoad[3]) << 8) + ((int)msgPayLoad[4]);
+                textBoxReception.Text += "\nRobot␣State␣:␣" +((StateRobot)(msgPayLoad[0])).ToString() +"␣-␣" + instant.ToString() + "␣ms";
+            }
 
 
 
 
         }
-
-        private void textBoxEmission_KeyUp_1(object sender, KeyEventArgs e)
+       
+        private void textBoxEmission_KeyUp_1(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 sendMessage();
         }
+
+        bool autoControlActivated=false;
+        private void HookManager_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (autoControlActivated == false)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                        UartEncodeAndSendMessage(0x0051, 1, new byte[] {
+                (byte)StateRobot.STATE_TOURNE_SUR_PLACE_GAUCHE});
+                break;
+            case Keys.Right:
+                    UartEncodeAndSendMessage(0x0051, 1, new byte[] {
+                    (byte)StateRobot.STATE_TOURNE_SUR_PLACE_DROITE });
+                break;
+
+            case Keys.Up:
+                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
+            { (byte)StateRobot.STATE_AVANCE });
+                break;
+
+            case Keys.Down:
+                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
+             { (byte)StateRobot.STATE_ARRET });
+                break;
+
+            case Keys.PageDown:
+                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
+             { (byte)StateRobot.STATE_RECULE });
+                break;
+            }
+        }
     }
+}
 }
