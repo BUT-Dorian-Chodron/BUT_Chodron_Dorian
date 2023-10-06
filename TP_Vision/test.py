@@ -38,7 +38,7 @@ image_jaune[:, :, 1] = 255
 image_jaune[:, :, 2] = 255
 
 yellow_filtered_img = cv2.bitwise_and(image_jaune, image_jaune, mask=imagemaskyellow)
-cv2.imshow("Image jaune", yellow_filtered_img)
+#cv2.imshow("Image jaune", yellow_filtered_img)
 
 #Filtre Vert
 lower_green = np.array([35, 50, 50])
@@ -54,7 +54,7 @@ image_verte[:, :, 1] = 255  # Canal vert à 255 (vert pur)
 green_filtered_img = cv2.bitwise_and(image_verte, image_verte, mask=imagemaskgreen)
 
 # Afficher l'image verte
-cv2.imshow("Image verte", green_filtered_img)
+#cv2.imshow("Image verte", green_filtered_img)
 #Filtre Bleu
 
 lower_blue = np.array([0, 0, 0])
@@ -66,7 +66,7 @@ cv2.waitKey(0)
 image_bleu = np.zeros((hauteur, largeur, 3), dtype=np.uint8)
 image_bleu[:, :, 0] = 255
 blue_filtered_img = cv2.bitwise_and(image_bleu, image_bleu, mask=imagemaskblue)
-cv2.imshow("Image bleu", blue_filtered_img)
+#cv2.imshow("Image bleu", blue_filtered_img)
 
 #Filtre bleu+vert+jaune
 alpha1 = 1
@@ -81,10 +81,10 @@ height = img.shape[0]
 width = img.shape[1]
 channels = img.shape[2]
 imgTransform = img
-for x in range(0, (int)(width/2)):
-    for y in range (0, (int)(height/2)):
-        imgTransform[y,x][0] *= 0.5
-        imgTransform[y,x][1] *= 0.5
-        imgTransform[y,x][2] *= 0.5
+for x in range(0, (int)(width)):
+    for y in range (0, (int)(height)):
+        imgTransform[y,x][0] *= 0
+        imgTransform[y,x][1] *= 1
+        imgTransform[y,x][2] *= 0
 cv2.imshow("Transformation_manuelle_de_l’image", imgTransform)
 cv2.waitKey(0)
