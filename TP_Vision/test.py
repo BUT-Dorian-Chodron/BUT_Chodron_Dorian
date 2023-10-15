@@ -3,7 +3,8 @@ print(cv2.__version__)
 import numpy as np
 img = cv2.imread("robocup.png")
 #cv2.imshow('RoboCup␣image', img)
-cv2.waitKey(0)
+cv2.waitKey(0)
+
 ##B, G, R = cv2.split(img)
 ##cv2.imshow("original", img)
 ##cv2.waitKey(0)
@@ -12,7 +13,8 @@ cv2.waitKey(0)
 ##cv2.imshow("Green", G)
 ##cv2.waitKey(0)
 ##cv2.imshow("Red", R)
-##cv2.waitKey(0)
+##cv2.waitKey(0)
+
 imagehsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 H, S, V = cv2.split(imagehsv)
 #cv2.imshow("Hue", H)
@@ -87,4 +89,5 @@ for x in range(0, (int)(width)):
         imgTransform[y,x][1] *= 1
         imgTransform[y,x][2] *= 0
 cv2.imshow("Transformation_manuelle_de_l’image", imgTransform)
-cv2.waitKey(0)
+cv2.waitKey(0)
+
