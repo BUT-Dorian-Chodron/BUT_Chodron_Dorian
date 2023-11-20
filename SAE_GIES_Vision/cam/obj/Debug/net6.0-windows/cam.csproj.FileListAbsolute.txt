@@ -1,0 +1,11 @@
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\MainWindow.baml
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\App.g.cs
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam_MarkupCompile.cache
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.g.resources
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.Properties.Resources.resources
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.csproj.GenerateResource.cache
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.GeneratedMSBuildEditorConfig.editorconfig
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.AssemblyInfoInputs.cache
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.AssemblyInfo.cs
+C:\GitHub\BUT_Chodron_Dorian\SAE_GIES_Vision\cam\obj\Debug\net6.0-windows\cam.csproj.CoreCompileInputs.cache

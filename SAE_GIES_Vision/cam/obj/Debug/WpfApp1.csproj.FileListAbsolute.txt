@@ -1,0 +1,17 @@
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\bin\Debug\WpfApp1.exe.config
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\bin\Debug\WpfApp1.exe
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\bin\Debug\WpfApp1.pdb
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\bin\Debug\MouseKeyboardActivityMonitor.dll
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\bin\Debug\MouseKeyboardActivityMonitor.xml
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.csproj.AssemblyReference.cache
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\MainWindow.baml
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\MainWindow.g.cs
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\App.g.cs
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1_MarkupCompile.cache
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.g.resources
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.Properties.Resources.resources
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.csproj.GenerateResource.cache
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.csproj.CoreCompileInputs.cache
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.csproj.CopyComplete
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.exe
+C:\GitHub\BUT_Chodron_Dorian\Sean\WpfApp1\obj\Debug\WpfApp1.pdb

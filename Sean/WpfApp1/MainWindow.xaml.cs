@@ -35,7 +35,7 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            serialPort1 = new ReliableSerialPort("COM9", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+            serialPort1 = new ReliableSerialPort("COM5", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
             serialPort1.DataReceived += SerialPort1_DataReceived;
             serialPort1.Open();
             timerAffichage = new DispatcherTimer();
@@ -53,11 +53,21 @@ namespace WpfApp1
 
         private void TimerAffichage_Tick(object sender, EventArgs e)
         {
-            //if (robot.receivedText != "")
-            //{
-            //   textBoxReception.Text += "Utilisation Serial port : "+robot.receivedText + "\n";
-            //   robot.receivedText = "";
-            // }
+            if (robot.receivedText != "")
+            {
+                for (int i = 0; i < robot.receivedText.Length; i++)
+                {
+                    // Vérifier si le caractère actuel est un saut de ligne
+                    if (robot.receivedText[i] == '\n')
+                    {
+                        // Extraire la sous-chaîne jusqu'à l'emplacement du saut de ligne
+                        textBoxReception.Text = "" + robot.receivedText.Substring(0, i) + "\n";
+                        break;
+                    }
+                }
+                
+               robot.receivedText = "";
+             }
 
             while (robot.byteListReceived.Count() > 0)
             {
@@ -366,5 +376,7 @@ namespace WpfApp1
             }
         }
     }
-}
+
+
+    }
 }

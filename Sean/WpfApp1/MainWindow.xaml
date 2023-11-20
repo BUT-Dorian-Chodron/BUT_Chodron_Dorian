@@ -22,7 +22,7 @@
             <TextBox x:Name="textBoxEmission" AcceptsReturn="True" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" KeyUp="textBoxEmission_KeyUp_1"/>
         </GroupBox>
         <GroupBox Grid.Column="1" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto">
-            <TextBox x:Name="textBoxReception"  AcceptsReturn="True" Text="" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            <TextBox x:Name="textBoxReception"  AcceptsReturn="True" Text="" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
         </GroupBox>
         <Button x:Name="buttonEnvoyer" Content="envoyer" Grid.Column="1"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Width="110" Grid.Row="1" Click="buttonEnvoyer_Click" Height="20"  />
         <Button x:Name="Clear" Content="Clear" Grid.Column="0"  HorizontalAlignment="Center"  VerticalAlignment="Stretch" Width="110" Grid.ColumnSpan="1" Grid.Row="1" Click="Clear_Click" Height="20"  />
