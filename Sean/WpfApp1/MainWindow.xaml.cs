@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using MouseKeyboardActivityMonitor.WinApi;
 using MouseKeyboardActivityMonitor;
 using System.Windows.Forms;
+using MathNet.Spatial.Euclidean;
 
 namespace WpfApp1
 {
@@ -49,7 +50,34 @@ namespace WpfApp1
 
         }
 
-        
+        private void PositionBall(object sender,EventArgs e)
+        {
+            string[] parts = robot.receivedText.Split('/');
+            int distPixel45 = 612;
+            Vector3D axeRobot = new Vector3D(1, 0, 0);
+            // Extraire les valeurs et les convertir en entiers
+
+            string ballXString = parts[0].Trim();
+                string ballYString = parts[1].Trim();
+                string ballRadiusString = parts[2].Trim();
+
+                int ballX = int.Parse(ballXString);
+                int ballY = int.Parse(ballYString);
+                int ballRadius = int.Parse(ballRadiusString);  
+            //Traitement data
+            double distanceObj = Math.Sqrt(Math.Pow(910-ballX,2) + Math.Pow(540-ballY,2));
+            double theta = Math.Atan2(distanceObj, distPixel45);
+            var matRotationTheta = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(-theta));
+            double phi = Math.Atan2(ballX, ballY);
+            var matRotationPlongeeCamera = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(0));
+            var axeOptique = axeRobot.TransformBy(matRotationPlongeeCamera);
+            var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(phi));
+
+
+
+
+
+        }
 
         private void TimerAffichage_Tick(object sender, EventArgs e)
         {
@@ -65,7 +93,7 @@ namespace WpfApp1
                         break;
                     }
                 }
-                
+               
                robot.receivedText = "";
              }
 
