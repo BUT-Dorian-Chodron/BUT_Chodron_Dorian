@@ -50,71 +50,89 @@ namespace WpfApp1
 
         }
 
-        private void PositionBall(object sender,EventArgs e)
+        private void PositionBall(int ballX,int ballY,int ballRadius)
         {
-            string[] parts = robot.receivedText.Split('/');
             int distPixel45 = 612;
-            Vector3D axeRobot = new Vector3D(1, 0, 0);
-            // Extraire les valeurs et les convertir en entiers
+            Vector3D axeOptique = new Vector3D(1, 0, 0);
 
-            string ballXString = parts[0].Trim();
-                string ballYString = parts[1].Trim();
-                string ballRadiusString = parts[2].Trim();
-
-                int ballX = int.Parse(ballXString);
-                int ballY = int.Parse(ballYString);
-                int ballRadius = int.Parse(ballRadiusString);  
             //Traitement data
-            double distanceObj = Math.Sqrt(Math.Pow(910-ballX,2) + Math.Pow(540-ballY,2));
-            double theta = Math.Atan2(distanceObj, distPixel45);
-            var matRotationTheta = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(-theta));
-            double phi = Math.Atan2(ballX, ballY);
-            var matRotationPlongeeCamera = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(0));
-            var axeOptique = axeRobot.TransformBy(matRotationPlongeeCamera);
-            var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(phi));
+            double distancePtObjetAxeOptique = Math.Sqrt(Math.Pow((1920/2)-ballX,2) + Math.Pow((1080/2)-ballY,2));
 
+            double theta = Math.Atan2(distancePtObjetAxeOptique, distPixel45);
+            var phi = -(Math.Atan2(ballX, ballY) - Math.PI / 2);
+            //double phi = Math.Atan2(ballX-1920/2, ballY-1080/2);
+
+            var matRotationTheta = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(-theta));
+            var axeTheta = axeOptique.TransformBy(matRotationTheta);
+
+            var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(theta));
+            var axeObjet = axeTheta.TransformBy(matRotationPhi);
+
+            //textBoxReception.Text = "" + axeRobot.X + axeRobot.Y + "\n";
 
 
 
 
         }
 
+
+        List<byte> currentByteList = new List<byte>();
+        
         private void TimerAffichage_Tick(object sender, EventArgs e)
         {
-            if (robot.receivedText != "")
-            {
-                for (int i = 0; i < robot.receivedText.Length; i++)
-                {
-                    // Vérifier si le caractère actuel est un saut de ligne
-                    if (robot.receivedText[i] == '\n')
-                    {
-                        // Extraire la sous-chaîne jusqu'à l'emplacement du saut de ligne
-                        textBoxReception.Text = "" + robot.receivedText.Substring(0, i) + "\n";
-                        break;
-                    }
-                }
+            //if (robot.receivedText != "")
+            //{
+            //    for (int i = 0; i < robot.receivedText.Length; i++)
+            //    {
+            //        // Vérifier si le caractère actuel est un saut de ligne
+            //        if (robot.receivedText[i] == '\n')
+            //        {
+            //            // Extraire la sous-chaîne jusqu'à l'emplacement du saut de ligne
+            //            textBoxReception.Text = +"" + robot.receivedText.Substring(0, i) + "\n";
+            //            break;
+            //        }
+            //    }
                
-               robot.receivedText = "";
-             }
+            //   robot.receivedText = "";
+            // }
 
             while (robot.byteListReceived.Count() > 0)
             {
                 var c = robot.byteListReceived.Dequeue();
-                //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
-                DecodeMessage(c);
-            }
 
+                if(c!='\r')
+                {
+                    if(c!='\n')
+                        currentByteList.Add(c);
+                }
+                else
+                {
+                    byte[] lastCompleteByteList = new byte[currentByteList.Count];
+                    currentByteList.CopyTo(lastCompleteByteList);
+                    for (int i=0; i<currentByteList.Count;i++)
+                    {
+                        byte data = currentByteList[i];
+                    }
+                    textBoxReception.Text = Encoding.ASCII.GetString(lastCompleteByteList) + "\n" + textBoxReception.Text;
+                    if (textBoxReception.Text.Length > 200)
+                        textBoxReception.Text = textBoxReception.Text.Substring(0, 200);
+                    currentByteList.Clear();
+                }
+
+                //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
+                //DecodeMessage(c);
+            }
+            PositionBall(500,1500,75);
 
         }
 
         private void SerialPort1_DataReceived(object sender, DataReceivedArgs e)
         {
             //textBoxReception.Text += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
-            robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+            //robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
             foreach (var c in e.Data)
             {
-                robot.byteListReceived.Enqueue(c);
-                
+                robot.byteListReceived.Enqueue(c);                
             }
         }
 
@@ -295,12 +313,12 @@ namespace WpfApp1
 
                     if (checksum == c)
                     {
-                        textBoxReception.Text = "OK \n";
+                        //textBoxReception.Text = "OK \n";
                         ProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
                     }
                     else
                     {
-                        textBoxReception.Text = "NON OK \n";
+                        //textBoxReception.Text = "NON OK \n";
                     }   
                     rcvState = StateReception.Waiting;
 
