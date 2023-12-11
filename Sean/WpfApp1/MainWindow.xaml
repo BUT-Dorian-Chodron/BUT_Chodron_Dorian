@@ -4,17 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="WpfApp1"
+        xmlns:s3D="http://schemas.abtsoftware.co.uk/scichart3D" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="800" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="236*"/>
-            <RowDefinition Height="29*"/>
-            <RowDefinition Height="154*"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1*"/>
 
 
         </Grid.RowDefinitions>
@@ -48,6 +49,33 @@
                 <TextBox x:Name="moteur_droit" TextWrapping="Wrap" Text="Moteur      Droit : " HorizontalAlignment="Stretch"/>
             </StackPanel>
         </GroupBox>
+
+        <Viewbox Grid.Row="2" Grid.Column="1" >
+            <s3D:SciChart3DSurface Width="400" Height="400" x:Name="SciChart3DBall" Grid.Column="1" BorderThickness="0" WorldDimensions="200,100,200" >
+                <s3D:SciChart3DSurface.Camera>
+                    <s3D:Camera3D ZoomToFitOnAttach="True"/>
+                </s3D:SciChart3DSurface.Camera>
+
+                <s3D:SciChart3DSurface.RenderableSeries>
+                    <s3D:ScatterRenderableSeries3D x:Name="ScatterSeries3D">
+                        <s3D:ScatterRenderableSeries3D.PointMarker>
+                            <s3D:EllipsePointMarker3D Fill="Red" Size="1.0" Opacity="1"/>
+                        </s3D:ScatterRenderableSeries3D.PointMarker>
+                    </s3D:ScatterRenderableSeries3D>
+                </s3D:SciChart3DSurface.RenderableSeries>
+
+                <s3D:SciChart3DSurface.XAxis>
+                    <s3D:NumericAxis3D VisibleRange="-4, 4" AutoRange="Never" Name="X"/>
+                </s3D:SciChart3DSurface.XAxis>
+                <s3D:SciChart3DSurface.YAxis>
+                    <s3D:NumericAxis3D VisibleRange="-2,2" AutoRange="Never" Name="Y"/>
+                </s3D:SciChart3DSurface.YAxis>
+                <s3D:SciChart3DSurface.ZAxis>
+                    <s3D:NumericAxis3D VisibleRange="0, 10" AutoRange="Never" Name="Z"/>
+                </s3D:SciChart3DSurface.ZAxis>
+
+            </s3D:SciChart3DSurface>
+        </Viewbox>
 
     </Grid>
 </Window>

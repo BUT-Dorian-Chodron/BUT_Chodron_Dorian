@@ -14,11 +14,20 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ExtendedSerialPort;
 using System.Windows.Threading;
+using SciChart.Charting;
 
 using MouseKeyboardActivityMonitor.WinApi;
 using MouseKeyboardActivityMonitor;
 using System.Windows.Forms;
 using MathNet.Spatial.Euclidean;
+using SciChart.Charting.Visuals;
+using SciChart.Charting3D.Model;
+using SciChart.Charting3D.RenderableSeries;
+using SciChart.Charting3D.PointMarkers;
+using SciChart.Charting2D.Interop;
+using SciChart.Data.Model;
+using SciChart.Charting.ViewportManagers;
+using SciChart.Charting3D;
 
 namespace WpfApp1
 {
@@ -33,8 +42,14 @@ namespace WpfApp1
         Robot robot = new Robot();
         private readonly KeyboardHookListener m_KeyboardHookManager;
 
+        XyzDataSeries3D<double> xyzDataSeries3D = new XyzDataSeries3D<double>() { SeriesName = "Series Ball" };
+        ScatterRenderableSeries3D renderSerias = new ScatterRenderableSeries3D();
+
         public MainWindow()
         {
+            // Set this code once in App.xaml.cs or application startup
+            SciChartSurface.SetRuntimeLicenseKey("fUqreVDpZQkQbANd4/WZ+HaJ23zvpzFnBaxZt7av32tx2d1phoLOC5Oj1oqtdQrFr1X5Prg7GCuB1cQOgM50ChVxrpE9SEbo4XQjB/g0cJv0oyAryMA0U7FK2X0xXgTPjWtTu8pIsR9dgS/Sxb39j1mtDSPBaw7EbRizLvbJEV4+gFJ4e261fjEBQ1DcVX4t670uaGbGb0K6D5CsU4VOzhL+q+pommyuqQkDUkROWOy0xlF7wjiQG1rEizVbkJJkV0Ao+mzuq9uPS6TdIzgUEeAP+teRJSSeQk46uvJ7ULzfVaY7ylBtE9ePNVRO6B9f1dV9LJvGYzo75g+wRgjGJqHJi4gOJG08geEL0nSe4B2LLay+LVVlw6XC4+xQpE+Reipy/nnUZgrdHXphCa3qcVJ7/BFjaRSc382d5ja76cVxwVsyf0C/0MA8Yt8NTxp3+4iNdZRtcx/Sz8uvWR+j7UFOAtSltMEMDbFnXSCSIBQc0+Y0oZKmb2egaiV09OrEfgBo/KQN");
+
             InitializeComponent();
             serialPort1 = new ReliableSerialPort("COM5", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
             serialPort1.DataReceived += SerialPort1_DataReceived;
@@ -48,31 +63,66 @@ namespace WpfApp1
             m_KeyboardHookManager.Enabled = true;
             m_KeyboardHookManager.KeyDown += HookManager_KeyDown;
 
+            renderSerias.DataSeries = xyzDataSeries3D;
+            renderSerias.PointMarker = new CubePointMarker3D();
+            renderSerias.PointMarker.Size = 5;
+            SciChart3DBall.RenderableSeries.Add(renderSerias);
+
+            SciChart3DBall.Camera.Position = new Vector3(0, 0, -10);
+            SciChart3DBall.Camera.Target = new Vector3(0, 0, 10);
+            SciChart3DBall.Camera.OrbitalPitch = 0;
+            SciChart3DBall.Camera.OrbitalYaw = 0;
+            //SciChart3DBall.XAxis.AutoRange = SciChart.Charting.Visuals.Axes.AutoRange.Never;
+            //SciChart3DBall.XAxis.VisibleRange = new IndexRange(0, 10);
+            //SciChart3DBall.YAxis.AutoRange = SciChart.Charting.Visuals.Axes.AutoRange.Never;
+            //SciChart3DBall.YAxis.VisibleRange = new IndexRange(-4, 4);
+            //SciChart3DBall.ZAxis.AutoRange = SciChart.Charting.Visuals.Axes.AutoRange.Never;
+            //SciChart3DBall.ZAxis.VisibleRange = new IndexRange(-2, 2);
         }
 
-        private void PositionBall(int ballX,int ballY,int ballRadius)
+        List<Point3D> trajectoire = new List<Point3D>();
+
+        private void PositionBall(int ballXRefPourri,int ballYRefPourri ,int ballRadius)
         {
             int distPixel45 = 612;
             Vector3D axeOptique = new Vector3D(1, 0, 0);
 
+            double ballX = ballXRefPourri - (1920 / 2);
+            double ballY = (1080 / 2) - ballYRefPourri;
+
+            textBoxReception.Text = "X : " + ballX + " - Y : " + ballY + " - Radius : " + ballRadius + "\n" + textBoxReception.Text;
+
             //Traitement data
-            double distancePtObjetAxeOptique = Math.Sqrt(Math.Pow((1920/2)-ballX,2) + Math.Pow((1080/2)-ballY,2));
+            double distancePtObjetAxeOptique = Math.Sqrt(Math.Pow(ballX,2) + Math.Pow(ballY,2));
 
             double theta = Math.Atan2(distancePtObjetAxeOptique, distPixel45);
-            var phi = -(Math.Atan2(ballX, ballY) - Math.PI / 2);
+            var phi = Math.Atan2(-ballX, ballY);
             //double phi = Math.Atan2(ballX-1920/2, ballY-1080/2);
 
             var matRotationTheta = Matrix3D.RotationAroundYAxis(MathNet.Spatial.Units.Angle.FromRadians(-theta));
             var axeTheta = axeOptique.TransformBy(matRotationTheta);
 
-            var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(theta));
+            var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(phi));
             var axeObjet = axeTheta.TransformBy(matRotationPhi);
 
-            //textBoxReception.Text = "" + axeRobot.X + axeRobot.Y + "\n";
+            if (ballRadius != 0)
+            {
+                double distance = 120.0 / ballRadius;
 
+                Vector3D ballPos = distance * axeObjet;
+                textBoxReception.Text = "Bx : " + ballPos.X.ToString("N2") + " By : " + ballPos.Y.ToString("N2") + " Bz : " + ballPos.Z.ToString("N2") + "\n" + textBoxReception.Text;
 
+                trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
+                while(trajectoire.Count > 50) //Si il y a plus de XXX points
+                {
+                    trajectoire.RemoveAt(0);
+                }
 
+                xyzDataSeries3D.Clear();
+                xyzDataSeries3D.Append(trajectoire.Select(o=>o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList());
 
+                SciChart3DBall.InvalidateArrange();
+            }
         }
 
 
@@ -107,22 +157,28 @@ namespace WpfApp1
                 }
                 else
                 {
-                    byte[] lastCompleteByteList = new byte[currentByteList.Count];
-                    currentByteList.CopyTo(lastCompleteByteList);
-                    for (int i=0; i<currentByteList.Count;i++)
-                    {
-                        byte data = currentByteList[i];
-                    }
-                    textBoxReception.Text = Encoding.ASCII.GetString(lastCompleteByteList) + "\n" + textBoxReception.Text;
-                    if (textBoxReception.Text.Length > 200)
-                        textBoxReception.Text = textBoxReception.Text.Substring(0, 200);
+                    /// On a terminé une trame, on l'analyse
+                    var trame = Encoding.ASCII.GetString(currentByteList.ToArray());
+                    var infos = trame.Split(' ');
+                                        
+                    int posX;
+                    int.TryParse(infos[1], out posX);
+                    int posY;
+                    int.TryParse(infos[2], out posY);
+                    int radius;
+                    int.TryParse(infos[3], out radius);
+
+                    PositionBall(posX, posY, radius);
+
+                    if (textBoxReception.Text.Length > 500)
+                        textBoxReception.Text = textBoxReception.Text.Substring(0, 500);
                     currentByteList.Clear();
                 }
 
                 //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
                 //DecodeMessage(c);
             }
-            PositionBall(500,1500,75);
+            //PositionBall(500,1500,75);
 
         }
 
@@ -424,5 +480,19 @@ namespace WpfApp1
     }
 
 
+    }
+
+    public class Point3D
+    {
+        public double X;
+        public double Y;
+        public double Z;
+
+        public Point3D(double x, double  y, double z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
     }
 }

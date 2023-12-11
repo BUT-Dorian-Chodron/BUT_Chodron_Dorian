@@ -55,9 +55,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ExtendedSerialPort">
-      <HintPath>C:\Users\GEII Robot\Desktop\RobotWPF\ExtendedSerialPort\obj\Debug\ExtendedSerialPort.dll</HintPath>
-    </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net48\MathNet.Numerics.dll</HintPath>
     </Reference>
@@ -66,6 +63,21 @@
     </Reference>
     <Reference Include="MouseKeyboardActivityMonitor">
       <HintPath>.\MouseKeyboardActivityMonitor.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Charting, Version=8.1.0.27856, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>packages\SciChart.8.1.0.27856\lib\net462\SciChart.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Charting3D, Version=8.1.0.27856, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>packages\SciChart3D.8.1.0.27856\lib\net462\SciChart.Charting3D.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Core, Version=8.1.0.27856, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>packages\SciChart.8.1.0.27856\lib\net462\SciChart.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Data, Version=8.1.0.27856, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>packages\SciChart.8.1.0.27856\lib\net462\SciChart.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Drawing, Version=8.1.0.27856, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>packages\SciChart.8.1.0.27856\lib\net462\SciChart.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
