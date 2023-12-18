@@ -1,5 +1,4 @@
 import cv2
-print(cv2.__version__)
 import numpy as np
 img = cv2.imread("Ballon.jpg")
 hauteur = 1000
@@ -27,7 +26,7 @@ lower_yellow = np.array([20, 100, 100]) #code hsv
 upper_yellow = np.array([30,255,255])
 imagemaskyellow = cv2.inRange(imagehsv, lower_yellow, upper_yellow)
 yellow_filtered_img = cv2.bitwise_and(img, img, mask=imagemaskyellow)
-#cv2.imshow("Image␣Masque␣Jaune", yellow_filtered_img)
+cv2.imshow("Image␣Masque␣Jaune", yellow_filtered_img)
 cv2.waitKey(0)
 
 image_jaune = np.zeros((hauteur, largeur, 3), dtype=np.uint8)

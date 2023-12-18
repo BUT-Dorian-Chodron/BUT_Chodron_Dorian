@@ -24,6 +24,7 @@ while cap.isOpened():
 
     image_jaune = np.zeros((hauteur, largeur, 3), dtype=np.uint8)
     image_jaune[:, :, 1] = 255
+    
     image_jaune[:, :, 2] = 255
     yellow_filtered_img = cv2.bitwise_and(image_jaune, image_jaune, mask=imagemaskyellow)
 
