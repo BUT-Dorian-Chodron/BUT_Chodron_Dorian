@@ -48,8 +48,8 @@ namespace WpfApp1
         public MainWindow()
         {
             // Set this code once in App.xaml.cs or application startup
-            //SciChartSurface.SetRuntimeLicenseKey("fUqreVDpZQkQbANd4/WZ+HaJ23zvpzFnBaxZt7av32tx2d1phoLOC5Oj1oqtdQrFr1X5Prg7GCuB1cQOgM50ChVxrpE9SEbo4XQjB/g0cJv0oyAryMA0U7FK2X0xXgTPjWtTu8pIsR9dgS/Sxb39j1mtDSPBaw7EbRizLvbJEV4+gFJ4e261fjEBQ1DcVX4t670uaGbGb0K6D5CsU4VOzhL+q+pommyuqQkDUkROWOy0xlF7wjiQG1rEizVbkJJkV0Ao+mzuq9uPS6TdIzgUEeAP+teRJSSeQk46uvJ7ULzfVaY7ylBtE9ePNVRO6B9f1dV9LJvGYzo75g+wRgjGJqHJi4gOJG08geEL0nSe4B2LLay+LVVlw6XC4+xQpE+Reipy/nnUZgrdHXphCa3qcVJ7/BFjaRSc382d5ja76cVxwVsyf0C/0MA8Yt8NTxp3+4iNdZRtcx/Sz8uvWR+j7UFOAtSltMEMDbFnXSCSIBQc0+Y0oZKmb2egaiV09OrEfgBo/KQN");
-            SciChartSurface.SetRuntimeLicenseKey("grFn6m7akvMOe4eERUFH7ZQnUR9WAFue5nYE/8cdvf21/39otXQO9ySDRAI/BAfgz97e7OQMFFzk4fY7FiBa/th2FidS5dkcvC5Yi9XfRRm8hSNxhw+aumT54a7BWgkQWt8qrgdgho7zJ6XVFqYTO6sQ5uJHh+se7FyWVJI2Z3I/C41P3yP/dDM4ZlLGXDwftFj0KFb7wKKNffhc6AmR0raCGLHeC1fwyWjei5pcojLQjuvvvimhryI/VntLBlJ7S4AMP/iGv3GQYrwTsKAjMqkluq8HUJpzMcksqsUXvODjMTJFBb/4/yVYsjm8mLWEE5Y90+SWy4n/vhjdOVLQzVROYGhuRDkEMi+ZNG4KkHYANy28F7LwQSOTJmRXd/i7NdmqgGbhq+EJAoflG+y6eOF/96tM11GrihwF/QN+4yBPPrX95s5IKdjV+1/oG0rOisAw/ptkia4F/fiaeKwOOgpuYdaLeGyoFXtobBtdA47sJ73xuJkqEoi1DHRYTysJCe3L+it6ZOcDdKw95TfdiNOmV0WvNKc/0eCkYQyjQBvxQdW1BzWzWispUSXO8HEzmkQW0Ra3G0mk75Ra");
+            SciChartSurface.SetRuntimeLicenseKey("fUqreVDpZQkQbANd4/WZ+HaJ23zvpzFnBaxZt7av32tx2d1phoLOC5Oj1oqtdQrFr1X5Prg7GCuB1cQOgM50ChVxrpE9SEbo4XQjB/g0cJv0oyAryMA0U7FK2X0xXgTPjWtTu8pIsR9dgS/Sxb39j1mtDSPBaw7EbRizLvbJEV4+gFJ4e261fjEBQ1DcVX4t670uaGbGb0K6D5CsU4VOzhL+q+pommyuqQkDUkROWOy0xlF7wjiQG1rEizVbkJJkV0Ao+mzuq9uPS6TdIzgUEeAP+teRJSSeQk46uvJ7ULzfVaY7ylBtE9ePNVRO6B9f1dV9LJvGYzo75g+wRgjGJqHJi4gOJG08geEL0nSe4B2LLay+LVVlw6XC4+xQpE+Reipy/nnUZgrdHXphCa3qcVJ7/BFjaRSc382d5ja76cVxwVsyf0C/0MA8Yt8NTxp3+4iNdZRtcx/Sz8uvWR+j7UFOAtSltMEMDbFnXSCSIBQc0+Y0oZKmb2egaiV09OrEfgBo/KQN");
+            //SciChartSurface.SetRuntimeLicenseKey("grFn6m7akvMOe4eERUFH7ZQnUR9WAFue5nYE/8cdvf21/39otXQO9ySDRAI/BAfgz97e7OQMFFzk4fY7FiBa/th2FidS5dkcvC5Yi9XfRRm8hSNxhw+aumT54a7BWgkQWt8qrgdgho7zJ6XVFqYTO6sQ5uJHh+se7FyWVJI2Z3I/C41P3yP/dDM4ZlLGXDwftFj0KFb7wKKNffhc6AmR0raCGLHeC1fwyWjei5pcojLQjuvvvimhryI/VntLBlJ7S4AMP/iGv3GQYrwTsKAjMqkluq8HUJpzMcksqsUXvODjMTJFBb/4/yVYsjm8mLWEE5Y90+SWy4n/vhjdOVLQzVROYGhuRDkEMi+ZNG4KkHYANy28F7LwQSOTJmRXd/i7NdmqgGbhq+EJAoflG+y6eOF/96tM11GrihwF/QN+4yBPPrX95s5IKdjV+1/oG0rOisAw/ptkia4F/fiaeKwOOgpuYdaLeGyoFXtobBtdA47sJ73xuJkqEoi1DHRYTysJCe3L+it6ZOcDdKw95TfdiNOmV0WvNKc/0eCkYQyjQBvxQdW1BzWzWispUSXO8HEzmkQW0Ra3G0mk75Ra");
             InitializeComponent();
             serialPort1 = new ReliableSerialPort("COM4", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
             serialPort1.DataReceived += SerialPort1_DataReceived;
@@ -71,8 +71,8 @@ namespace WpfApp1
             var camera = new Camera3D();
             camera.Position = new Vector3(200, -200, 200); // Ajuster la position de la caméra
             camera.Target = new Vector3(0, 0, 0); // Le point vers lequel la caméra est dirigée
-            camera.OrbitalPitch = -90; // Inclinaison verticale
-            camera.OrbitalYaw = -90; // Inclinaison horizontale
+            camera.OrbitalPitch = 33; // Inclinaison verticale
+            camera.OrbitalYaw = -50; // Inclinaison horizontale
             SciChart3DBall.Camera = camera;
 
             //SciChart3DBall.Camera.Position = new Vector3(0, 0, -10);
