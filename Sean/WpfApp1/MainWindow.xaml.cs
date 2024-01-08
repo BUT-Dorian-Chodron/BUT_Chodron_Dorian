@@ -19,7 +19,10 @@ using SciChart.Charting;
 using MouseKeyboardActivityMonitor.WinApi;
 using MouseKeyboardActivityMonitor;
 using System.Windows.Forms;
+
 using MathNet.Spatial.Euclidean;
+using MathNet.Numerics.LinearRegression;
+
 using SciChart.Charting.Visuals;
 using SciChart.Charting3D.Model;
 using SciChart.Charting3D.RenderableSeries;
@@ -28,6 +31,9 @@ using SciChart.Charting2D.Interop;
 using SciChart.Data.Model;
 using SciChart.Charting.ViewportManagers;
 using SciChart.Charting3D;
+using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
+
 
 namespace WpfApp1
 {
@@ -35,7 +41,7 @@ namespace WpfApp1
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         ReliableSerialPort serialPort1;
         DispatcherTimer timerAffichage;
@@ -51,7 +57,7 @@ namespace WpfApp1
             SciChartSurface.SetRuntimeLicenseKey("fUqreVDpZQkQbANd4/WZ+HaJ23zvpzFnBaxZt7av32tx2d1phoLOC5Oj1oqtdQrFr1X5Prg7GCuB1cQOgM50ChVxrpE9SEbo4XQjB/g0cJv0oyAryMA0U7FK2X0xXgTPjWtTu8pIsR9dgS/Sxb39j1mtDSPBaw7EbRizLvbJEV4+gFJ4e261fjEBQ1DcVX4t670uaGbGb0K6D5CsU4VOzhL+q+pommyuqQkDUkROWOy0xlF7wjiQG1rEizVbkJJkV0Ao+mzuq9uPS6TdIzgUEeAP+teRJSSeQk46uvJ7ULzfVaY7ylBtE9ePNVRO6B9f1dV9LJvGYzo75g+wRgjGJqHJi4gOJG08geEL0nSe4B2LLay+LVVlw6XC4+xQpE+Reipy/nnUZgrdHXphCa3qcVJ7/BFjaRSc382d5ja76cVxwVsyf0C/0MA8Yt8NTxp3+4iNdZRtcx/Sz8uvWR+j7UFOAtSltMEMDbFnXSCSIBQc0+Y0oZKmb2egaiV09OrEfgBo/KQN");
             //SciChartSurface.SetRuntimeLicenseKey("grFn6m7akvMOe4eERUFH7ZQnUR9WAFue5nYE/8cdvf21/39otXQO9ySDRAI/BAfgz97e7OQMFFzk4fY7FiBa/th2FidS5dkcvC5Yi9XfRRm8hSNxhw+aumT54a7BWgkQWt8qrgdgho7zJ6XVFqYTO6sQ5uJHh+se7FyWVJI2Z3I/C41P3yP/dDM4ZlLGXDwftFj0KFb7wKKNffhc6AmR0raCGLHeC1fwyWjei5pcojLQjuvvvimhryI/VntLBlJ7S4AMP/iGv3GQYrwTsKAjMqkluq8HUJpzMcksqsUXvODjMTJFBb/4/yVYsjm8mLWEE5Y90+SWy4n/vhjdOVLQzVROYGhuRDkEMi+ZNG4KkHYANy28F7LwQSOTJmRXd/i7NdmqgGbhq+EJAoflG+y6eOF/96tM11GrihwF/QN+4yBPPrX95s5IKdjV+1/oG0rOisAw/ptkia4F/fiaeKwOOgpuYdaLeGyoFXtobBtdA47sJ73xuJkqEoi1DHRYTysJCe3L+it6ZOcDdKw95TfdiNOmV0WvNKc/0eCkYQyjQBvxQdW1BzWzWispUSXO8HEzmkQW0Ra3G0mk75Ra");
             InitializeComponent();
-            serialPort1 = new ReliableSerialPort("COM4", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+            serialPort1 = new ReliableSerialPort("COM5", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
             serialPort1.DataReceived += SerialPort1_DataReceived;
             serialPort1.Open();
             timerAffichage = new DispatcherTimer();
@@ -89,8 +95,20 @@ namespace WpfApp1
         }
 
         List<Point3D> trajectoire = new List<Point3D>();
+        private void Prediction(int ballXRefPourri, int ballYRefPourri, int ballRadius)
+        {
+            //Détection fin trajectoire --> tableau de trajectoire : trajectoire
+            //utilis&tion du temps
+            double[] ptX = new double[] { 0, 1, 2, 3 };
+            double[] ptY = new double[] { 4, 5, 6, 7 };
+            double[] ptZ = new double[] { 0, 1, 2, 3 };
 
-        private void PositionBall(int ballXRefPourri,int ballYRefPourri ,int ballRadius)
+            (double Ax, double Bx) = Fit.Line(ptX, ptY);
+
+        }
+
+
+        private void PositionBall(int ballXRefPourri, int ballYRefPourri, int ballRadius)
         {
             int distPixel45 = 612;
             Vector3D axeOptique = new Vector3D(1, 0, 0);
@@ -101,7 +119,7 @@ namespace WpfApp1
             //textBoxReception.Text = "X : " + ballX + " - Y : " + ballY + " - Radius : " + ballRadius + "\n" + textBoxReception.Text;
 
             //Traitement data
-            double distancePtObjetAxeOptique = Math.Sqrt(Math.Pow(ballX,2) + Math.Pow(ballY,2));
+            double distancePtObjetAxeOptique = Math.Sqrt(Math.Pow(ballX, 2) + Math.Pow(ballY, 2));
 
             double theta = Math.Atan2(distancePtObjetAxeOptique, distPixel45);
             var phi = Math.Atan2(-ballX, ballY);
@@ -121,13 +139,13 @@ namespace WpfApp1
                 textBoxReception.Text = "Bx : " + ballPos.X.ToString("N2") + " By : " + ballPos.Y.ToString("N2") + " Bz : " + ballPos.Z.ToString("N2") + "\n" + textBoxReception.Text;
 
                 trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
-                while(trajectoire.Count > 50) //Si il y a plus de XXX points
+                while (trajectoire.Count > 50) //Si il y a plus de XXX points
                 {
                     trajectoire.RemoveAt(0);
                 }
 
                 xyzDataSeries3D.Clear();
-                xyzDataSeries3D.Append(trajectoire.Select(o=>o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList());
+                xyzDataSeries3D.Append(trajectoire.Select(o => o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList());
 
                 SciChart3DBall.InvalidateArrange();
             }
@@ -135,7 +153,7 @@ namespace WpfApp1
 
 
         List<byte> currentByteList = new List<byte>();
-        
+
         private void TimerAffichage_Tick(object sender, EventArgs e)
         {
             //if (robot.receivedText != "")
@@ -150,7 +168,7 @@ namespace WpfApp1
             //            break;
             //        }
             //    }
-               
+
             //   robot.receivedText = "";
             // }
 
@@ -158,9 +176,9 @@ namespace WpfApp1
             {
                 var c = robot.byteListReceived.Dequeue();
 
-                if(c!='\r')
+                if (c != '\r')
                 {
-                    if(c!='\n')
+                    if (c != '\n')
                         currentByteList.Add(c);
                 }
                 else
@@ -180,9 +198,9 @@ namespace WpfApp1
                         textBoxReception.Text = "X : " + posX + " - Y : " + posY + " - Radius : " + radius + "\n" + textBoxReception.Text;
                     }
 
-                    
 
-                    
+
+
 
                     if (textBoxReception.Text.Length > 500)
                         textBoxReception.Text = textBoxReception.Text.Substring(0, 500);
@@ -202,7 +220,7 @@ namespace WpfApp1
             //robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
             foreach (var c in e.Data)
             {
-                robot.byteListReceived.Enqueue(c);                
+                robot.byteListReceived.Enqueue(c);
             }
         }
 
@@ -222,14 +240,14 @@ namespace WpfApp1
         }
         void sendMessage()
         {
-           
+
             serialPort1.WriteLine(textBoxEmission.Text);
             //textBoxReception.Text = "Reçu : " + textBoxEmission.Text + "\n";
             textBoxEmission.Text = "";
 
         }
 
-       
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             textBoxEmission.Text = "";
@@ -283,7 +301,7 @@ namespace WpfApp1
             UartEncodeAndSendMessage(0x0020, 2, led);
 
             //byte[] Telemetre = { 0x0E, 0xA1, 0x10 };
-           // UartEncodeAndSendMessage(0x0030, 3, Telemetre);
+            // UartEncodeAndSendMessage(0x0030, 3, Telemetre);
 
             // byte[] vitesse = { 0xA0, 0x85 };
             // UartEncodeAndSendMessage(0x0040, 2, vitesse);
@@ -339,7 +357,7 @@ namespace WpfApp1
                 case StateReception.Waiting:
 
                     if (c == 0xFE) rcvState = StateReception.FunctionMSB;
-                    else rcvState = StateReception.Waiting;  
+                    else rcvState = StateReception.Waiting;
                     break;
 
                 case StateReception.FunctionMSB:
@@ -389,7 +407,7 @@ namespace WpfApp1
                     else
                     {
                         //textBoxReception.Text = "NON OK \n";
-                    }   
+                    }
                     rcvState = StateReception.Waiting;
 
                     break;
@@ -398,11 +416,11 @@ namespace WpfApp1
                     break;
             }
         }
-        void ProcessDecodedMessage(int msgFunction, int msgPayloadLength,byte[]msgPayLoad)
+        void ProcessDecodedMessage(int msgFunction, int msgPayloadLength, byte[] msgPayLoad)
         {
-            if (msgFunction==0x0030)
+            if (msgFunction == 0x0030)
             {
-                IRgauche.Text = "IR gauche : " + msgPayLoad[0]+"cm";
+                IRgauche.Text = "IR gauche : " + msgPayLoad[0] + "cm";
                 IRcentre.Text = "IR centre : " + msgPayLoad[1] + "cm";
                 IRdroite.Text = "IR droite : " + msgPayLoad[2] + "cm";
             }
@@ -410,7 +428,7 @@ namespace WpfApp1
             {
                 moteur_gauche.Text = "Moteur gauche : " + msgPayLoad[0] + "%";
                 moteur_droit.Text = "Moteur droit : " + msgPayLoad[1] + "%";
-                
+
 
             }
             if (msgFunction == 0x0020)
@@ -434,32 +452,32 @@ namespace WpfApp1
 
                 }
             }
-            if (msgFunction == 0x0080 || msgFunction ==0x051)
+            if (msgFunction == 0x0080 || msgFunction == 0x051)
             {
-                for(int i  = 0; i< msgPayloadLength; i++)
-                    {
+                for (int i = 0; i < msgPayloadLength; i++)
+                {
                     textBoxReception.Text += "0x" + msgPayLoad[i].ToString("X2") + " ";
                 }
             }
             if (msgFunction == 0x0050)
             {
-                
-                int instant = (((int)msgPayLoad[1]) << 24) + (((int)msgPayLoad[2]) << 16)+ (((int)msgPayLoad[3]) << 8) + ((int)msgPayLoad[4]);
-                textBoxReception.Text += "\nRobot␣State␣:␣" +((StateRobot)(msgPayLoad[0])).ToString() +"␣-␣" + instant.ToString() + "␣ms";
+
+                int instant = (((int)msgPayLoad[1]) << 24) + (((int)msgPayLoad[2]) << 16) + (((int)msgPayLoad[3]) << 8) + ((int)msgPayLoad[4]);
+                textBoxReception.Text += "\nRobot␣State␣:␣" + ((StateRobot)(msgPayLoad[0])).ToString() + "␣-␣" + instant.ToString() + "␣ms";
             }
 
 
 
 
         }
-       
+
         private void textBoxEmission_KeyUp_1(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 sendMessage();
         }
 
-        bool autoControlActivated=false;
+        bool autoControlActivated = false;
         private void HookManager_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (autoControlActivated == false)
@@ -469,29 +487,29 @@ namespace WpfApp1
                     case Keys.Left:
                         UartEncodeAndSendMessage(0x0051, 1, new byte[] {
                 (byte)StateRobot.STATE_TOURNE_SUR_PLACE_GAUCHE});
-                break;
-            case Keys.Right:
-                    UartEncodeAndSendMessage(0x0051, 1, new byte[] {
+                        break;
+                    case Keys.Right:
+                        UartEncodeAndSendMessage(0x0051, 1, new byte[] {
                     (byte)StateRobot.STATE_TOURNE_SUR_PLACE_DROITE });
-                break;
+                        break;
 
-            case Keys.Up:
-                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
-            { (byte)StateRobot.STATE_AVANCE });
-                break;
+                    case Keys.Up:
+                        UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                { (byte)StateRobot.STATE_AVANCE });
+                        break;
 
-            case Keys.Down:
-                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
-             { (byte)StateRobot.STATE_ARRET });
-                break;
+                    case Keys.Down:
+                        UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                 { (byte)StateRobot.STATE_ARRET });
+                        break;
 
-            case Keys.PageDown:
-                    UartEncodeAndSendMessage(0x0051, 1, new byte[]
-             { (byte)StateRobot.STATE_RECULE });
-                break;
+                    case Keys.PageDown:
+                        UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                 { (byte)StateRobot.STATE_RECULE });
+                        break;
+                }
             }
         }
-    }
 
 
     }
@@ -502,7 +520,7 @@ namespace WpfApp1
         public double Y;
         public double Z;
 
-        public Point3D(double x, double  y, double z)
+        public Point3D(double x, double y, double z)
         {
             X = x;
             Y = y;
