@@ -33,7 +33,8 @@ using SciChart.Charting.ViewportManagers;
 using SciChart.Charting3D;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
-
+using SciChart.Core.Extensions;
+using System.ComponentModel;
 
 namespace WpfApp1
 {
@@ -95,18 +96,61 @@ namespace WpfApp1
         }
 
         List<Point3D> trajectoire = new List<Point3D>();
-        private void Prediction(int ballXRefPourri, int ballYRefPourri, int ballRadius)
+        List<double> ptXList = new List<double>();
+        List<double> ptYList = new List<double>();
+        List<double> ptZList = new List<double>();
+        List<double> ptTList = new List<double>();
+        private (Point3D, double) Prediction(List<Point3D> trajectoire)
         {
-            //Détection fin trajectoire --> tableau de trajectoire : trajectoire
-            //utilis&tion du temps
-            double[] ptX = new double[] { 0, 1, 2, 3 };
-            double[] ptY = new double[] { 4, 5, 6, 7 };
-            double[] ptZ = new double[] { 0, 1, 2, 3 };
+            int nbPtsUsedForPrediction = 5;
+            if (trajectoire.Count > nbPtsUsedForPrediction)
+            {
+                var trajRecente = trajectoire.Reverse<Point3D>().Take(nbPtsUsedForPrediction).Reverse<Point3D>(); //On prend les X derniers éléments de la liste
+                double[] ptX = trajRecente.Select(elt => elt.X).ToArray();
+                double[] ptY = trajRecente.Select(elt => elt.Y).ToArray();
+                double[] ptZ = trajRecente.Select(elt => elt.Z).ToArray();
 
-            (double Ax, double Bx) = Fit.Line(ptX, ptY);
+                double[] ptT = new double[nbPtsUsedForPrediction];
+                for (int i = 0; i < nbPtsUsedForPrediction; i++)
+                {
+                    ptT[i] = -nbPtsUsedForPrediction + i;
+                }
 
+                (double Ax, double Bx) = Fit.Line(ptT, ptX);
+                (double Ay, double By) = Fit.Line(ptT, ptY);
+                (double Az, double Bz) = Fit.Line(ptT, ptZ);
+
+                //On évalue la précision de la régression, et donc de la prédiction
+                double precisionRegression = 0;
+                for(int i = 0; i< nbPtsUsedForPrediction; i++)
+                {
+                    double fittedX = Ax + Bx * ptT[i];
+                    double ecartX = ptX[i] - fittedX;
+                    double fittedY = Ay + By * ptT[i];
+                    double ecartY = ptY[i] - fittedY;
+                    double fittedZ = Az + Bz * ptT[i];
+                    double ecartZ = ptZ[i] - fittedZ;
+
+                    double ecart = Math.Sqrt(ecartX*ecartX+ecartY*ecartY+ecartZ*ecartZ);
+                    precisionRegression += ecart;
+                }
+                precisionRegression /= nbPtsUsedForPrediction;
+
+                // On évalue la distance moyenne entre les pts projetés
+                double fittedInitialX = Ax + Bx * ptT[0];
+                double fittedInitialY = Ay + By * ptT[0];
+                double fittedInitialZ = Az + Bz * ptT[0];
+                double fittedFinalX = Ax + Bx * ptT[nbPtsUsedForPrediction - 1];
+                double fittedFinalY = Ay + By * ptT[nbPtsUsedForPrediction - 1];
+                double fittedFinalZ = Az + Bz * ptT[nbPtsUsedForPrediction - 1];
+                double distance = Math.Sqrt(Math.Pow(fittedInitialX-fittedFinalX,2) + Math.Pow(fittedInitialY-fittedFinalY,2) + Math.Pow(fittedInitialZ-fittedFinalZ,2));
+                double precisionDistance = distance / (nbPtsUsedForPrediction-1);
+
+                return (new Point3D(Ax, Ay, Az), precisionDistance / 2 + precisionRegression*2);
+            }
+            else
+                return (null, 0);
         }
-
 
         private void PositionBall(int ballXRefPourri, int ballYRefPourri, int ballRadius)
         {
@@ -136,13 +180,34 @@ namespace WpfApp1
                 double distance = 120.0 / ballRadius;
 
                 Vector3D ballPos = distance * axeObjet;
-                textBoxReception.Text = "Bx : " + ballPos.X.ToString("N2") + " By : " + ballPos.Y.ToString("N2") + " Bz : " + ballPos.Z.ToString("N2") + "\n" + textBoxReception.Text;
-
-                trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
-                while (trajectoire.Count > 50) //Si il y a plus de XXX points
+                //textBoxReception.Text = "Bx : " + ballPos.X.ToString("N2") + " By : " + ballPos.Y.ToString("N2") + " Bz : " + ballPos.Z.ToString("N2") + "\n" + textBoxReception.Text;
+                
+                (Point3D pred, double precision) = Prediction(trajectoire); //On prédit à partir de la liste des derniers pts de la trajectoire
+                if (pred != null)
                 {
-                    trajectoire.RemoveAt(0);
+                    //On a eu assez de pts pour générer la prédiction
+                    if (IsPredictionInTrajectory(pred, ballPos, precision)) //On regarde si la prédiction colle avec le pt reçu
+                    {
+                        //On complète la trajectoire
+                        while (trajectoire.Count > 50) //Si il y a plus de XXX points
+                        {
+                            trajectoire.RemoveAt(0);
+                        }
+                        trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
+                    }
+                    else
+                    {
+                        // On clear la trajectoire
+                        trajectoire.Clear();
+                        trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
+                    }
                 }
+                else
+                {
+                    //Pas assez de pts pour générer la prédiction
+                    trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
+                }
+
 
                 xyzDataSeries3D.Clear();
                 xyzDataSeries3D.Append(trajectoire.Select(o => o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList());
@@ -151,6 +216,14 @@ namespace WpfApp1
             }
         }
 
+        private bool IsPredictionInTrajectory(Point3D pred, Vector3D ballPos, double precision)
+        {
+            double distancePredictionPosition = Math.Sqrt(Math.Pow(pred.X - ballPos.X, 2) + Math.Pow(pred.Y - ballPos.Y, 2) + Math.Pow(pred.Z - ballPos.Z, 2));
+            if (distancePredictionPosition < precision)
+                return true;
+            else
+                return false;
+        }
 
         List<byte> currentByteList = new List<byte>();
 
@@ -195,7 +268,7 @@ namespace WpfApp1
                         int.TryParse(infos[2], out posY);
                         int.TryParse(infos[3], out radius);
                         PositionBall(posX, posY, radius);
-                        textBoxReception.Text = "X : " + posX + " - Y : " + posY + " - Radius : " + radius + "\n" + textBoxReception.Text;
+                        //textBoxReception.Text = "X : " + posX + " - Y : " + posY + " - Radius : " + radius + "\n" + textBoxReception.Text;
                     }
 
 
