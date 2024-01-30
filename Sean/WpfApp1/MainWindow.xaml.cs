@@ -76,10 +76,12 @@ namespace WpfApp1
             SciChart3DBall.RenderableSeries.Add(renderSerias);
 
             var camera = new Camera3D();
-            camera.Position = new Vector3(200, -200, 200); // Ajuster la position de la caméra
-            camera.Target = new Vector3(0, 0, 0); // Le point vers lequel la caméra est dirigée
-            camera.OrbitalPitch = 33; // Inclinaison verticale
-            camera.OrbitalYaw = -50; // Inclinaison horizontale
+            camera.Position = new Vector3(385, 301, -184); // Ajuster la position de la caméra
+            camera.Target = new Vector3(0, 100, 0); // Le point vers lequel la caméra est dirigée
+            camera.OrbitalPitch = 25; // Inclinaison verticale
+            camera.OrbitalYaw = -205; // Inclinaison horizontale
+            camera.Radius = 472;
+            camera.FieldOfView = 60;
             SciChart3DBall.Camera = camera;
 
             //SciChart3DBall.Camera.Position = new Vector3(0, 0, -10);
@@ -96,10 +98,10 @@ namespace WpfApp1
         }
 
         List<Point3D> trajectoire = new List<Point3D>();
-        List<double> ptXList = new List<double>();
-        List<double> ptYList = new List<double>();
-        List<double> ptZList = new List<double>();
-        List<double> ptTList = new List<double>();
+        //List<double> ptXList = new List<double>();
+        //List<double> ptYList = new List<double>();
+        //List<double> ptZList = new List<double>();
+        //List<double> ptTList = new List<double>();
         private (Point3D, double) Prediction(List<Point3D> trajectoire)
         {
             int nbPtsUsedForPrediction = 5;
@@ -122,7 +124,7 @@ namespace WpfApp1
 
                 //On évalue la précision de la régression, et donc de la prédiction
                 double precisionRegression = 0;
-                for(int i = 0; i< nbPtsUsedForPrediction; i++)
+                for (int i = 0; i < nbPtsUsedForPrediction; i++)
                 {
                     double fittedX = Ax + Bx * ptT[i];
                     double ecartX = ptX[i] - fittedX;
@@ -131,7 +133,7 @@ namespace WpfApp1
                     double fittedZ = Az + Bz * ptT[i];
                     double ecartZ = ptZ[i] - fittedZ;
 
-                    double ecart = Math.Sqrt(ecartX*ecartX+ecartY*ecartY+ecartZ*ecartZ);
+                    double ecart = Math.Sqrt(ecartX * ecartX + ecartY * ecartY + ecartZ * ecartZ);
                     precisionRegression += ecart;
                 }
                 precisionRegression /= nbPtsUsedForPrediction;
@@ -143,22 +145,25 @@ namespace WpfApp1
                 double fittedFinalX = Ax + Bx * ptT[nbPtsUsedForPrediction - 1];
                 double fittedFinalY = Ay + By * ptT[nbPtsUsedForPrediction - 1];
                 double fittedFinalZ = Az + Bz * ptT[nbPtsUsedForPrediction - 1];
-                double distance = Math.Sqrt(Math.Pow(fittedInitialX-fittedFinalX,2) + Math.Pow(fittedInitialY-fittedFinalY,2) + Math.Pow(fittedInitialZ-fittedFinalZ,2));
-                double precisionDistance = distance / (nbPtsUsedForPrediction-1);
+                double distance = Math.Sqrt(Math.Pow(fittedInitialX - fittedFinalX, 2) + Math.Pow(fittedInitialY - fittedFinalY, 2) + Math.Pow(fittedInitialZ - fittedFinalZ, 2));
+                double precisionDistance = distance / (nbPtsUsedForPrediction - 1);
 
-                return (new Point3D(Ax, Ay, Az), precisionDistance / 2 + precisionRegression*2);
+                return (new Point3D(Ax, Ay, Az), precisionDistance * 10 + precisionRegression * 10);
             }
             else
                 return (null, 0);
         }
+
+        double correctionCamX = 93;
+        double correctionCamY = 121;
 
         private void PositionBall(int ballXRefPourri, int ballYRefPourri, int ballRadius)
         {
             int distPixel45 = 612;
             Vector3D axeOptique = new Vector3D(1, 0, 0);
 
-            double ballX = ballXRefPourri - (1920 / 2);
-            double ballY = (1080 / 2) - ballYRefPourri;
+            double ballX = ballXRefPourri - (1920 / 2) - correctionCamX;
+            double ballY = (1080 / 2) - ballYRefPourri - correctionCamY;
 
             //textBoxReception.Text = "X : " + ballX + " - Y : " + ballY + " - Radius : " + ballRadius + "\n" + textBoxReception.Text;
 
@@ -175,13 +180,15 @@ namespace WpfApp1
             var matRotationPhi = Matrix3D.RotationAroundArbitraryVector(axeOptique.Normalize(), MathNet.Spatial.Units.Angle.FromRadians(phi));
             var axeObjet = axeTheta.TransformBy(matRotationPhi);
 
+            xyzDataSeries3D.Clear();
+
             if (ballRadius != 0)
             {
                 double distance = 120.0 / ballRadius;
 
                 Vector3D ballPos = distance * axeObjet;
                 //textBoxReception.Text = "Bx : " + ballPos.X.ToString("N2") + " By : " + ballPos.Y.ToString("N2") + " Bz : " + ballPos.Z.ToString("N2") + "\n" + textBoxReception.Text;
-                
+
                 (Point3D pred, double precision) = Prediction(trajectoire); //On prédit à partir de la liste des derniers pts de la trajectoire
                 if (pred != null)
                 {
@@ -198,9 +205,12 @@ namespace WpfApp1
                     else
                     {
                         // On clear la trajectoire
-                        trajectoire.Clear();
+                        //trajectoire.Clear();
                         trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
+                        //textBoxReception.Text += "Changement trajectoire \n";
                     }
+                    //On représente le point prédit
+                    xyzDataSeries3D.Append(pred.X, pred.Y, pred.Z, new PointMetadata3D(Color.FromRgb(255, 0, 0), 2));
                 }
                 else
                 {
@@ -208,9 +218,12 @@ namespace WpfApp1
                     trajectoire.Add(new Point3D(ballPos.Y, ballPos.Z, ballPos.X));
                 }
 
+                xyzDataSeries3D.Append(trajectoire.Select(o => o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList(), trajectoire.Select(o => new PointMetadata3D(Color.FromRgb(0, 0, 255), 1)).ToList());
 
-                xyzDataSeries3D.Clear();
-                xyzDataSeries3D.Append(trajectoire.Select(o => o.X).ToList(), trajectoire.Select(o => o.Y).ToList(), trajectoire.Select(o => o.Z).ToList());
+
+
+
+
 
                 SciChart3DBall.InvalidateArrange();
             }
