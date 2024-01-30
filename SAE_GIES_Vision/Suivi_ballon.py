@@ -10,7 +10,7 @@ cv2.waitKey(0)
 
 
 imagehsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-H, S, V = cv2.split(imagehsv)
+#H, S, V = cv2.split(imagehsv)
 #cv2.imshow("Hue", H)
 cv2.waitKey(0)
 #cv2.imshow("Saturation", S)
